@@ -42,6 +42,6 @@ Only works partly with Principled BSDF. The following shader settings are suppor
 - BSDF Emission Strength Value (only a fixed value)
 
 ## Limitations for UV Maps
-This addon automatically unwraps your models using the Smart UV Project and bakes. Because of that your nodes should only work with "Generated" Texture Coordinates and not custom UV maps. 
+This addon automatically unwraps your models using the Smart UV Project. Because of that your nodes should only work with "Generated" Texture Coordinates and not custom UV maps. 
 
 If wanted I can add another option to use the existing UV Map (just create an issue :D).

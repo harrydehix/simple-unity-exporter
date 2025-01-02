@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Simple Unity Export",
     "author": "Henri Hollmann",
-    "version": (0, 0, 1),
+    "version": (0, 0, 2),
     "blender": (4, 3, 2),
     "location": "3D Viewport > Sidebar > Simple Unity export",
     "description": "This addons allows you to simply export blender assets to unity. Support is limited to Principled BSDF. To correctly import any asset you need the 'FixTextureMaps' script located inside your unity project. After that simply drag all export folders to unity.",

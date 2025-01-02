@@ -10,8 +10,11 @@ class SimpleUnityExportOperator(bpy.types.Operator):
     def delete_and_clear_object(self, object):
         for mat_slot in object.material_slots:
             if mat_slot.material:
-                bpy.data.materials.remove(mat_slot.material)
-        bpy.data.meshes.remove(object.data)
+                bpy.data.materials.remove(mat_slot.material, do_unlink=True)
+                
+        object_data = object.data
+        bpy.data.objects.remove(object, do_unlink=True)
+        bpy.data.meshes.remove(object_data)
     
     def select_object(self, object):
         bpy.context.view_layer.objects.active = object
@@ -158,7 +161,7 @@ class SimpleUnityExportOperator(bpy.types.Operator):
         # Return if no baking is needed
         if not baking_is_needed:
             self.report({'INFO'}, f"No '{bsdf_input_name}' input found, not generating any texture!")
-            return (True, None) 
+            return (True, texture) 
         
         # Bake base color input (or normal input) to texture
         samples_before = bpy.context.scene.cycles.samples
@@ -219,10 +222,28 @@ class SimpleUnityExportOperator(bpy.types.Operator):
                 node_tree.links.new(normal_map_node.outputs['Normal'], principled_node.inputs['Normal'])   
     
         return (True, texture)
+    
+    def start_progress(self, props):
+        props.progress = 0
+        self.redraw_tools_window()
+
+    def redraw_tools_window(self):
+        area_3d = None
+        for area in bpy.context.screen.areas:
+            if area.type == "VIEW_3D":
+                area_3d = area
+        if area_3d != None:
+            for region in area_3d.regions:
+                if(region.type == "TOOLS"):
+                    region.tag_redraw()
         
     def update_progress(self, props, value):
         props.progress = value
-        bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1)
+        self.redraw_tools_window()
+
+    def end_progress(self, props):
+        props.progress = -1
+        self.redraw_tools_window()
         
     def create_baked_duplicate(self, context, object_props, scene_props, obj, progress_step, export_folder):
         # Duplicate object
@@ -347,6 +368,20 @@ class SimpleUnityExportOperator(bpy.types.Operator):
                 return (False, textures, None)
         self.update_progress(scene_props, scene_props.progress + progress_step * 0.2)
         return (True, textures, new_obj)
+    
+    def delete_texture(self, texture_name):
+        texture = bpy.data.images.get(texture_name)
+        if not texture:
+            self.report({'INFO'}, f"Didn't delete texture - does not exist!")
+            return False
+
+        if texture.users > 0:
+            self.report({'INFO'}, f"Didn't delete texture - still referenced!")
+            return False
+        
+        bpy.data.images.remove(texture)
+        self.report({'INFO'}, f"Deleted texture: {texture_name}")
+        return True
         
     def export_active_object(self, context, progress_step):
         scene_props = context.scene.simple_unity_export
@@ -397,36 +432,39 @@ class SimpleUnityExportOperator(bpy.types.Operator):
             current_obj.select_set(True)
             
         # Export
-        bpy.ops.export_scene.fbx(filepath=export_file, use_selection=True, axis_up='Y')
+        bpy.ops.export_scene.fbx(filepath=export_file, use_selection=True, axis_up='Y', axis_forward='-Z')
         
         # Delete duplicate, materials, etc
         # Delete object
         for current_obj in new_objects:
             self.delete_and_clear_object(current_obj)
-        # Delete textures from blend file
-        for texture in textures:
-            texture.user_clear()
-            bpy.data.images.remove(texture)
-        
+
         # Only select original
         self.select_object(obj)
-        return True
 
+        # Delete textures from blend file
+        for texture in textures:
+            self.report({'INFO'}, f"Texture to delete: {texture.name}")
+            self.delete_texture(texture.name)
+
+        return True
+    
     def execute(self, context):
         scene_props = context.scene.simple_unity_export
 
         # Set progress to 0
-        self.update_progress(scene_props, 0.0)
+        self.start_progress(scene_props)
         self.report({'INFO'}, f"Exporting objects...")
         
         obj = context.active_object
         if obj is None or (obj.type != 'MESH' and obj.type != 'CURVE' and obj.type != 'FONT') or not obj.select_get():
             self.report({'ERROR'}, f"Select at least one object (mesh / curve) to export!")
+            self.end_progress(scene_props)
             return {'FINISHED'}
         
         selected_objects_reset = bpy.context.selected_objects
         selected_objects = bpy.context.selected_objects
-        progress_step = 1.0 / len(selected_objects)
+        progress_step = 1 / len(selected_objects)
         for obj in selected_objects:
                     
             obj_children = obj.children_recursive
@@ -442,7 +480,7 @@ class SimpleUnityExportOperator(bpy.types.Operator):
             self.select_object(obj)
             success = self.export_active_object(context, progress_step) 
             if not success:
-                self.update_progress(scene_props, -1)
+                self.end_progress(scene_props)
                 return {'FINISHED'}
         
         # Reset selection
@@ -451,6 +489,6 @@ class SimpleUnityExportOperator(bpy.types.Operator):
             obj.select_set(True)
         bpy.context.view_layer.objects.active = obj
         
-        self.update_progress(scene_props, -1)
+        self.end_progress(scene_props)
         self.report({'INFO'}, f"Successfully exported objects!")
         return {'FINISHED'}

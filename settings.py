@@ -99,7 +99,7 @@ class ExportSettings(bpy.types.PropertyGroup):
     
     progress: bpy.props.FloatProperty(
         name="Progress",
-        default=-1
+        default=0
     )
     
 class ObjectExportSettings(ExportSettings):

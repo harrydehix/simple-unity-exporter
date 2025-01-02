@@ -32,6 +32,7 @@ def register():
     bpy.utils.register_class(settings.ObjectExportSettings)
     bpy.types.Scene.simple_unity_export = bpy.props.PointerProperty(type=settings.ExportSettings)
     bpy.types.Object.simple_unity_export_object = bpy.props.PointerProperty(type=settings.ObjectExportSettings)
+    bpy.types.VIEW3D_MT_object.append(lambda self, context: self.layout.operator(simple_unity_operator.SimpleUnityExportOperator.bl_idname, text="Export selected objects to unity"))
 
     for cls in classes:
         bpy.utils.register_class(cls)

@@ -27,7 +27,7 @@ In this section you configure if modifiers, scale, rotation and location are app
 ### Material
 In this section you configure how materials are exported. The individual maps correspond to the Principled BSDF shader settings. 
 
-The texture width and height define the resolution. It is recommended to stay in an area between 512 and 2048. Higher values might crash blender.
+The texture width and height define the resolution. It is recommended to stay in an area between 512 and 2048. Higher values might take multiple minutes.
 
 The option "Smart unwrap" configures if you want your model to be unwrapped automatically using the smart uv project. This only produces good results if you just use "Generated" texture coordinates inside your material.
 

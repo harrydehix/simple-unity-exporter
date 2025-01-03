@@ -29,6 +29,8 @@ In this section you configure how materials are exported. The individual maps co
 
 The texture width and height define the resolution. It is recommended to stay in an area between 512 and 2048. Higher values might crash blender.
 
+The option "Smart unwrap" configures if you want your model to be unwrapped automatically using the smart uv project. This only produces good results if you just use "Generated" texture coordinates inside your material.
+
 ### Children
 In this section you configure how children of selected objects are treated. If you select "Include in parent .fbx file" or "Export in seperated .fbx file" don't select them on exporting. Otherwise you will export them twice.
 
@@ -42,6 +44,5 @@ Only works partly with Principled BSDF. The following shader settings are suppor
 - BSDF Emission Strength Value (only a fixed value)
 
 ## Limitations for UV Maps
-This addon automatically unwraps your models using the Smart UV Project. Because of that your nodes should only work with "Generated" Texture Coordinates and not custom UV maps. 
 
-If wanted I can add another option to use the existing UV Map (just create an issue :D).
+Your UV map must lie inside the 0-1 scale. Select `UV -> Constrain to Image Bounds` to ensure this.

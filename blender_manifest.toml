@@ -3,7 +3,7 @@ schema_version = "1.0.0"
 # Example of manifest file for a Blender extension
 # Change the values according to your extension
 id = "simple_unity_exporter"
-version = "0.0.2"
+version = "0.0.3"
 name = "Simple Unity Exporter"
 tagline = "This addons allows you to simply export blender assets to unity. Support is limited to Principled BSDF. To correctly import any asset you need the 'FixTextureMaps' script located inside your unity project. After that simply drag all export folders to unity"
 maintainer = "Henri Hollmann"

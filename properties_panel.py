@@ -42,6 +42,7 @@ class ObjectPropertiesPanel(bpy.types.Panel):
                 body.row()
                 body.prop(props, "map_width")
                 body.prop(props, "map_height")
+                body.prop(props, "smart_unwrap")
                 body.prop(props, "base_map")
                 body.prop(props, "metallic_map")
                 body.prop(props, "normal_map")

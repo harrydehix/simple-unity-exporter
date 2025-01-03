@@ -101,6 +101,11 @@ class ExportSettings(bpy.types.PropertyGroup):
         name="Progress",
         default=0
     )
+
+    smart_unwrap: bpy.props.BoolProperty(
+        name="Smart unwrap",
+        default=True
+    )
     
 class ObjectExportSettings(ExportSettings):
     override_material: bpy.props.BoolProperty(

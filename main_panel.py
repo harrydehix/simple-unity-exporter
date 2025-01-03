@@ -63,6 +63,7 @@ class MapsPanel(bpy.types.Panel):
         row.label(text="Only supports Principled BSDF", icon="ERROR")
         layout.prop(props, "map_width")
         layout.prop(props, "map_height")
+        layout.prop(props, "smart_unwrap")
         layout.prop(props, "base_map")
         layout.prop(props, "metallic_map")
         layout.prop(props, "normal_map")

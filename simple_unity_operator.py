@@ -89,6 +89,7 @@ class SimpleUnityExportOperator(bpy.types.Operator):
             object_props.height_map = global_props.height_map
             object_props.occlusion_map = global_props.occlusion_map
             object_props.emission_map = global_props.emission_map
+            object_props.smart_unwrap = global_props.smart_unwrap
 
         return object_props
                 
@@ -291,7 +292,8 @@ class SimpleUnityExportOperator(bpy.types.Operator):
         uv_map.active_render = True
         uv_layers.active = uv_map
         bpy.ops.uv.select_all(action='SELECT')
-        bpy.ops.uv.smart_project(island_margin=0.001)
+        if object_props.smart_unwrap:
+            bpy.ops.uv.smart_project(island_margin=0.001)
         bpy.ops.uv.select_all(action='SELECT')
         bpy.ops.object.mode_set(mode='OBJECT')
         
